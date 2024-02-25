@@ -8,7 +8,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/rivo/tview v0.0.0-20240204151237-861aa94d61c8
 	github.com/sergi/go-diff v1.3.1
-	gopkg.in/yaml.v3 v3.0.1
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

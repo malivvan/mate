@@ -100,6 +100,8 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 
 	b.cursors = []*Cursor{&b.Cursor}
 
+	b.updateRules()
+
 	return b
 }
 
@@ -111,51 +113,46 @@ func (b *Buffer) GetName() string {
 
 // updateRules updates the syntax rules and filetype for this buffer
 // This is called when the colorscheme changes
-func (b *Buffer) updateRules(runtimeFiles *RuntimeFiles) {
-	if runtimeFiles == nil {
-		return
-	}
+func (b *Buffer) updateRules() {
 
 	rehighlight := false
 	var files []*highlight.File
-	for _, f := range runtimeFiles.ListRuntimeFiles(RTSyntax) {
-		data, err := f.Data()
-		if err == nil {
-			file, err := highlight.ParseFile(data)
-			if err != nil {
-				continue
-			}
-			ftdetect, err := highlight.ParseFtDetect(file)
-			if err != nil {
-				continue
-			}
+	for _, f := range SyntaxAssets {
 
-			ft := b.Settings["filetype"].(string)
-			if (ft == "Unknown" || ft == "") && !rehighlight {
-				if highlight.MatchFiletype(ftdetect, b.Path, b.lines[0].data) {
-					header := new(highlight.Header)
-					header.FileType = file.FileType
-					header.FtDetect = ftdetect
-					b.syntaxDef, err = highlight.ParseDef(file, header)
-					if err != nil {
-						continue
-					}
-					rehighlight = true
-				}
-			} else {
-				if file.FileType == ft && !rehighlight {
-					header := new(highlight.Header)
-					header.FileType = file.FileType
-					header.FtDetect = ftdetect
-					b.syntaxDef, err = highlight.ParseDef(file, header)
-					if err != nil {
-						continue
-					}
-					rehighlight = true
-				}
-			}
-			files = append(files, file)
+		file, err := highlight.ParseFile(f.Data)
+		if err != nil {
+			continue
 		}
+		ftdetect, err := highlight.ParseFtDetect(file)
+		if err != nil {
+			continue
+		}
+
+		ft := b.Settings["filetype"].(string)
+		if (ft == "Unknown" || ft == "") && !rehighlight {
+			if highlight.MatchFiletype(ftdetect, b.Path, b.lines[0].data) {
+				header := new(highlight.Header)
+				header.FileType = file.FileType
+				header.FtDetect = ftdetect
+				b.syntaxDef, err = highlight.ParseDef(file, header)
+				if err != nil {
+					continue
+				}
+				rehighlight = true
+			}
+		} else {
+			if file.FileType == ft && !rehighlight {
+				header := new(highlight.Header)
+				header.FileType = file.FileType
+				header.FtDetect = ftdetect
+				b.syntaxDef, err = highlight.ParseDef(file, header)
+				if err != nil {
+					continue
+				}
+				rehighlight = true
+			}
+		}
+		files = append(files, file)
 	}
 
 	if b.syntaxDef != nil {

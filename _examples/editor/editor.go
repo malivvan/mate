@@ -25,16 +25,13 @@ func main() {
 	content, _ := os.ReadFile(path)
 
 	var colorscheme editor.Colorscheme
-	if monokai := editor.Assets.FindFile(editor.RTColorscheme, "monokai"); monokai != nil {
-		if data, err := monokai.Data(); err == nil {
-			colorscheme = editor.ParseColorscheme(string(data))
-		}
+	if monokai := editor.ColorschemeAssets().Get("monokai"); monokai != nil {
+		colorscheme = editor.ParseColorscheme(string(monokai.Data))
 	}
 
 	app := tview.NewApplication()
 	buffer := editor.NewBufferFromString(string(content), path)
 	root := editor.NewView(buffer)
-	root.SetRuntimeFiles(editor.Assets)
 	root.SetColorscheme(colorscheme)
 	root.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {

@@ -3,9 +3,8 @@ package highlight
 import (
 	"errors"
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"regexp"
-
-	"gopkg.in/yaml.v3"
 )
 
 // A Group represents a syntax group
