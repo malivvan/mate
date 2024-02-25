@@ -171,7 +171,7 @@ func (menuBar *MenuBar) Draw(screen tcell.Screen) {
 	x, y, width, _ := menuBar.GetInnerRect()
 
 	for i := 0; i < width; i += 1 {
-		screen.SetContent(x+i, y, tcell.RuneBlock, nil, tcell.StyleDefault)
+		screen.SetContent(x+i, y, tcell.RuneBlock, nil, tcell.StyleDefault.Background(menuBar.GetBackgroundColor()).Foreground(menuBar.GetBackgroundColor()))
 	}
 
 	menuItemOffset := 1
