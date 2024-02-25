@@ -1,4 +1,3 @@
-// Demo code for the bar chart primitive.
 package main
 
 import (
@@ -6,11 +5,11 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 func main() {
-	app := tview.NewApplication()
+	app := view.NewApplication()
 	gauge := chart.NewActivityModeGauge()
 	gauge.SetTitle("activity mode gauge")
 	gauge.SetPgBgColor(tcell.ColorOrange)
@@ -29,7 +28,9 @@ func main() {
 	}
 	go update()
 
-	if err := app.SetRoot(gauge, false).EnableMouse(true).Run(); err != nil {
+	app.SetRoot(gauge, true)
+	app.EnableMouse(true)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }

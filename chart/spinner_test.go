@@ -3,13 +3,14 @@ package chart_test
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/malivvan/mate/chart"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 	"testing"
 )
 
 func TestSpinner(t *testing.T) {
-	app := tview.NewApplication()
-	headerBox := tview.NewBox().SetBorder(true)
+	app := view.NewApplication()
+	headerBox := view.NewBox()
+	headerBox.SetBorder(true)
 	spinner := chart.NewSpinner()
 	screen := tcell.NewSimulationScreen("UTF-8")
 
@@ -18,10 +19,14 @@ func TestSpinner(t *testing.T) {
 	}
 
 	go func() {
-		appLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+		appLayout := view.NewFlex()
+		appLayout.SetDirection(view.FlexRow)
 		appLayout.AddItem(headerBox, 1, 0, true)
 		appLayout.AddItem(spinner, 50, 0, true)
-		err := app.SetScreen(screen).SetRoot(appLayout, true).Run()
+
+		app.SetScreen(screen)
+		app.SetRoot(appLayout, true)
+		err := app.Run()
 		if err != nil {
 			panic(err)
 		}

@@ -1,12 +1,17 @@
 package main
 
 import (
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 func main() {
-	box := tview.NewBox().SetBorder(true).SetTitle("Hello, world!")
-	if err := tview.NewApplication().SetRoot(box, true).Run(); err != nil {
+	box := view.NewBox()
+	box.SetBorder(true)
+	box.SetTitle("Hello, world!")
+	app := view.NewApplication()
+	app.SetRoot(box, true)
+	app.EnableMouse(true)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }

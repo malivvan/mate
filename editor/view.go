@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // The View struct stores information about a view into a buffer.
 // It stores information about the cursor, and the viewport
 // that the user sees the buffer from.
 type View struct {
-	*tview.Box
+	*view.Box
 
 	// A pointer to the buffer's cursor for ease of access
 	Cursor *Cursor
@@ -67,7 +67,7 @@ type View struct {
 func NewView(buf *Buffer) *View {
 	v := new(View)
 
-	v.Box = tview.NewBox()
+	v.Box = view.NewBox()
 
 	v.x, v.y, v.width, v.height = 0, 0, 0, 0
 
@@ -91,8 +91,8 @@ func (v *View) SetRect(x, y, width, height int) {
 }
 
 // InputHandler returns a handler which received key events when this view has focus,
-func (v *View) InputHandler() func(event *tcell.EventKey, _ func(p tview.Primitive)) {
-	return v.WrapInputHandler(func(event *tcell.EventKey, _ func(p tview.Primitive)) {
+func (v *View) InputHandler() func(event *tcell.EventKey, _ func(p view.Primitive)) {
+	return v.WrapInputHandler(func(event *tcell.EventKey, _ func(p view.Primitive)) {
 		v.HandleEvent(event)
 	})
 }

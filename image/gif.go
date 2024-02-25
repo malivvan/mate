@@ -9,16 +9,16 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // GifView is a box which displays animated gifs via Omnikron13's pixelview
 // dynamic color rendering.  It automatically draws the right frame based on
 // time elapsed since creation.  You can trigger re-drawing by executing
-// Animate(tview.Application) in a goroutine.
+// Animate(view.Application) in a goroutine.
 type GifView struct {
 	sync.Mutex
-	*tview.Box
+	*view.Box
 
 	// Timing for the frames
 	delay         []time.Duration
@@ -30,7 +30,7 @@ type GifView struct {
 // NewGifView returns a new GifView.
 func NewGifView() *GifView {
 	return &GifView{
-		Box:       tview.NewBox(),
+		Box:       view.NewBox(),
 		startTime: time.Now(),
 	}
 }
@@ -123,14 +123,14 @@ func (g *GifView) Draw(screen tcell.Screen) {
 	x, y, w, _ := g.GetInnerRect()
 
 	for i, line := range frame {
-		tview.Print(screen, line, x, y+i, w, tview.AlignLeft, tcell.ColorWhite)
+		view.Print(screen, []byte(line), x, y+i, w, view.AlignLeft, tcell.ColorWhite)
 	}
 }
 
 var globalAnimationMutex = &sync.Mutex{}
 
 // Animate triggers the application to redraw every 50ms
-func Animate(app *tview.Application) {
+func Animate(app *view.Application) {
 	globalAnimationMutex.Lock()
 	defer globalAnimationMutex.Unlock()
 

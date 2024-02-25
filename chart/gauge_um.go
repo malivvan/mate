@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // UtilModeGauge represents utilisation mode gauge permitive.
 type UtilModeGauge struct {
-	*tview.Box
+	*view.Box
 	// pc percentage value
 	pc float64
 	// warn percentage value
@@ -33,7 +33,7 @@ type UtilModeGauge struct {
 // NewUtilModeGauge returns new utilisation mode gauge permitive.
 func NewUtilModeGauge() *UtilModeGauge {
 	gauge := &UtilModeGauge{
-		Box:        tview.NewBox(),
+		Box:        view.NewBox(),
 		pc:         gaugeMinPc,
 		warnPc:     gaugeWarnPc,
 		critPc:     gaugeCritPc,
@@ -41,7 +41,7 @@ func NewUtilModeGauge() *UtilModeGauge {
 		critColor:  tcell.ColorRed,
 		okColor:    tcell.ColorGreen,
 		emptyColor: tcell.ColorWhite,
-		labelColor: tview.Styles.PrimaryTextColor,
+		labelColor: view.Styles.PrimaryTextColor,
 		label:      "",
 	}
 
@@ -59,7 +59,7 @@ func (g *UtilModeGauge) SetLabelColor(color tcell.Color) {
 }
 
 // Focus is called when this primitive receives focus.
-func (g *UtilModeGauge) Focus(delegate func(p tview.Primitive)) {
+func (g *UtilModeGauge) Focus(delegate func(p view.Primitive)) {
 }
 
 // HasFocus returns whether or not this primitive has focus.
@@ -91,7 +91,9 @@ func (g *UtilModeGauge) GetValue() float64 {
 
 // Draw draws this primitive onto the screen.
 func (g *UtilModeGauge) Draw(screen tcell.Screen) {
-	g.Box.DrawForSubclass(screen, g)
+	//g.Box.DrawForSubclass(screen, g)
+	g.Box.Draw(screen)
+
 	x, y, width, height := g.Box.GetInnerRect()
 	labelPCWidth := 7
 	labelWidth := len(g.label)
@@ -106,22 +108,22 @@ func (g *UtilModeGauge) Draw(screen tcell.Screen) {
 				color = g.emptyColor
 			}
 
-			tview.Print(screen, prgCell, x+labelWidth+i, y+j, 1, tview.AlignCenter, color)
+			view.Print(screen, []byte(prgCell), x+labelWidth+i, y+j, 1, view.AlignCenter, color)
 		}
 	}
 	// draw label
 	tY := y + (height / emptySpaceParts)
 	if labelWidth > 0 {
-		tview.Print(screen, g.label, x, tY, labelWidth, tview.AlignLeft, g.labelColor)
+		view.Print(screen, []byte(g.label), x, tY, labelWidth, view.AlignLeft, g.labelColor)
 	}
 
 	// draw percentage text
-	tview.Print(screen, fmt.Sprintf("%6.2f%%", g.pc),
+	view.Print(screen, []byte(fmt.Sprintf("%6.2f%%", g.pc)),
 		x+barWidth+labelWidth,
 		tY,
 		labelPCWidth,
-		tview.AlignLeft,
-		tview.Styles.PrimaryTextColor)
+		view.AlignLeft,
+		view.Styles.PrimaryTextColor)
 }
 
 // SetWarnPercentage sets warning percentage start range.

@@ -1,15 +1,16 @@
 package main
 
 import (
+	"github.com/malivvan/mate/chart"
 	"math"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 func main() {
 
-	app := tview.NewApplication()
+	app := view.NewApplication()
 
 	sinData := func() [][]float64 {
 		n := 220
@@ -85,22 +86,27 @@ func main() {
 	bmScatterPlot.SetMarker(chart.PlotMarkerBraille)
 	bmScatterPlot.SetData(scatterPlotData)
 
-	firstRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+	firstRow := view.NewFlex()
+	firstRow.SetDirection(view.FlexColumn)
 	firstRow.AddItem(dmLineChart, 0, 1, false)
 	firstRow.AddItem(bmLineChart, 0, 1, false)
 	firstRow.SetRect(0, 0, 100, 15)
 
-	secondRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+	secondRow := view.NewFlex()
+	secondRow.SetDirection(view.FlexColumn)
 	secondRow.AddItem(dmScatterPlot, 0, 1, false)
 	secondRow.AddItem(bmScatterPlot, 0, 1, false)
 	secondRow.SetRect(0, 0, 100, 15)
 
-	layout := tview.NewFlex().SetDirection(tview.FlexRow)
+	layout := view.NewFlex()
+	layout.SetDirection(view.FlexRow)
 	layout.AddItem(firstRow, 0, 1, false)
 	layout.AddItem(secondRow, 0, 1, false)
 	layout.SetRect(0, 0, 100, 30)
 
-	if err := app.SetRoot(layout, false).EnableMouse(true).Run(); err != nil {
+	app.SetRoot(layout, false)
+	app.EnableMouse(true)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }

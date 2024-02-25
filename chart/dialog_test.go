@@ -3,13 +3,14 @@ package chart_test
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/malivvan/mate/chart"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 	"testing"
 )
 
 func TestDialog(t *testing.T) {
-	app := tview.NewApplication()
-	headerBox := tview.NewBox().SetBorder(true)
+	app := view.NewApplication()
+	headerBox := view.NewBox()
+	headerBox.SetBorder(true)
 	msgDialog := chart.NewMessageDialog(chart.InfoDialog)
 	screen := tcell.NewSimulationScreen("UTF-8")
 
@@ -18,10 +19,17 @@ func TestDialog(t *testing.T) {
 	}
 
 	go func() {
-		appLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+		appLayout := view.NewFlex()
+		appLayout.SetDirection(view.FlexRow)
 		appLayout.AddItem(headerBox, 0, 1, true)
 		appLayout.AddItem(msgDialog, 0, 1, true)
-		err := app.SetScreen(screen).SetRoot(appLayout, true).Run()
+
+		app.SetScreen(screen)
+		app.SetRoot(appLayout, true)
+		err := app.Run()
+		if err != nil {
+			panic(err)
+		}
 		if err != nil {
 			panic(err)
 		}

@@ -1,4 +1,3 @@
-// Demo code for the bar chart primitive.
 package main
 
 import (
@@ -8,11 +7,11 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 func main() {
-	app := tview.NewApplication()
+	app := view.NewApplication()
 
 	// spinners
 	spinners := []*chart.Spinner{
@@ -38,8 +37,10 @@ func main() {
 		chart.NewSpinner().SetCustomStyle([]rune{'🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'}),
 	}
 
-	spinnerRow := tview.NewFlex().SetDirection(tview.FlexColumn)
-	spinnerRow.SetBorder(true).SetTitle("spinners")
+	spinnerRow := view.NewFlex()
+	spinnerRow.SetDirection(view.FlexColumn)
+	spinnerRow.SetBorder(true)
+	spinnerRow.SetTitle("spinners")
 
 	for _, spinner := range spinners {
 		spinnerRow.AddItem(spinner, 0, 1, false)
@@ -80,7 +81,8 @@ func main() {
 	swapGauge.SetBorder(false)
 
 	// utilisation flex
-	utilFlex := tview.NewFlex().SetDirection(tview.FlexRow)
+	utilFlex := view.NewFlex()
+	utilFlex.SetDirection(view.FlexRow)
 	utilFlex.AddItem(cpuGauge, 1, 0, false)
 	utilFlex.AddItem(memGauge, 1, 0, false)
 	utilFlex.AddItem(swapGauge, 1, 0, false)
@@ -151,32 +153,38 @@ func main() {
 	iowaitSparkline.SetData(ioSparkLineData)
 	systemSparkline.SetData(systemSparklineData)
 
-	sparklineGroupLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	sparklineGroupLayout := view.NewFlex()
+	sparklineGroupLayout.SetDirection(view.FlexColumn)
 	sparklineGroupLayout.SetBorder(true)
 	sparklineGroupLayout.SetTitle("sparkline")
 	sparklineGroupLayout.AddItem(iowaitSparkline, 0, 1, false)
-	sparklineGroupLayout.AddItem(tview.NewBox(), 1, 0, false)
+	sparklineGroupLayout.AddItem(view.NewBox(), 1, 0, false)
 	sparklineGroupLayout.AddItem(systemSparkline, 0, 1, false)
 
 	// first row layout
-	firstRowfirstCol := tview.NewFlex().SetDirection(tview.FlexRow)
+	firstRowfirstCol := view.NewFlex()
+	firstRowfirstCol.SetDirection(view.FlexRow)
 	firstRowfirstCol.AddItem(barGraph, 0, 1, false)
 
-	firstRowSecondCol := tview.NewFlex().SetDirection(tview.FlexRow)
+	firstRowSecondCol := view.NewFlex()
+	firstRowSecondCol.SetDirection(view.FlexRow)
 	firstRowSecondCol.AddItem(amGauge, 0, 3, false)
 	firstRowSecondCol.AddItem(pmGauge, 0, 3, false)
 	firstRowSecondCol.AddItem(utilFlex, 0, 5, false)
 
-	firstRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+	firstRow := view.NewFlex()
+	firstRow.SetDirection(view.FlexColumn)
 	firstRow.AddItem(firstRowfirstCol, 0, 1, false)
 	firstRow.AddItem(firstRowSecondCol, 0, 1, false)
 
 	// second row
-	plotRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	plotRowLayout := view.NewFlex()
+	plotRowLayout.SetDirection(view.FlexColumn)
 	plotRowLayout.AddItem(bmLineChart, 0, 1, false)
 	plotRowLayout.AddItem(dmLineChart, 0, 1, false)
 
-	screenLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+	screenLayout := view.NewFlex()
+	screenLayout.SetDirection(view.FlexRow)
 	screenLayout.AddItem(firstRow, 11, 0, false)
 	screenLayout.AddItem(plotRowLayout, 15, 0, false)
 	screenLayout.AddItem(sparklineGroupLayout, 6, 0, false)
@@ -286,7 +294,9 @@ func main() {
 	go updateSpinner()
 	go update()
 
-	if err := app.SetRoot(screenLayout, false).EnableMouse(true).Run(); err != nil {
+	app.SetRoot(screenLayout, false)
+	app.EnableMouse(true)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }

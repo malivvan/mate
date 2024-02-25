@@ -4,12 +4,12 @@ import (
 	"sync"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // Spartline represents a sparkline widgets.
 type Sparkline struct {
-	*tview.Box
+	*view.Box
 
 	data           []float64
 	dataTitle      string
@@ -21,20 +21,21 @@ type Sparkline struct {
 // NewSparkline returns a new sparkline widget.
 func NewSparkline() *Sparkline {
 	return &Sparkline{
-		Box: tview.NewBox(),
+		Box: view.NewBox(),
 	}
 }
 
 // Draw draws this primitive onto the screen.
 func (sl *Sparkline) Draw(screen tcell.Screen) {
-	sl.Box.DrawForSubclass(screen, sl)
+	//sl.Box.DrawForSubclass(screen, sl)
+	sl.Box.Draw(screen)
 
 	x, y, width, height := sl.Box.GetInnerRect()
 	barHeight := height
 
 	// print label
 	if sl.dataTitle != "" {
-		tview.Print(screen, sl.dataTitle, x, y, width, tview.AlignLeft, sl.dataTitlecolor)
+		view.Print(screen, []byte(sl.dataTitle), x, y, width, view.AlignLeft, sl.dataTitlecolor)
 		barHeight--
 	}
 
@@ -50,15 +51,13 @@ func (sl *Sparkline) Draw(screen tcell.Screen) {
 
 		sparkChar := barsRune[len(barsRune)-1]
 
-		style := tcell.StyleDefault.Background(sl.GetBackgroundColor()).Foreground(sl.lineColor)
-
 		for j := 0; j < dHeight; j++ {
-			tview.PrintJoinedSemigraphics(screen, i+x, y-1+height-j, sparkChar, style)
+			view.PrintJoinedSemigraphics(screen, i+x, y-1+height-j, sparkChar, sl.lineColor)
 		}
 
 		if dHeight == 0 {
 			sparkChar = barsRune[1]
-			tview.PrintJoinedSemigraphics(screen, i+x, y-1+height, sparkChar, style)
+			view.PrintJoinedSemigraphics(screen, i+x, y-1+height, sparkChar, sl.lineColor)
 		}
 	}
 }

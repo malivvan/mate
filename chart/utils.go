@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 type drawLineMode int
@@ -123,14 +123,14 @@ func absInt(x int) int {
 	return -x
 }
 
-func drawLine(screen tcell.Screen, startX int, startY int, length int, mode drawLineMode, style tcell.Style) {
+func drawLine(screen tcell.Screen, startX int, startY int, length int, mode drawLineMode, color tcell.Color) {
 	if mode == horizontalLine {
 		for i := 0; i < length; i++ {
-			tview.PrintJoinedSemigraphics(screen, startX+i, startY, tview.BoxDrawingsLightTripleDashHorizontal, style)
+			view.PrintJoinedSemigraphics(screen, startX+i, startY, view.BoxDrawingsLightTripleDashHorizontal, color)
 		}
 	} else if mode == verticalLine {
 		for i := 0; i < length; i++ {
-			tview.PrintJoinedSemigraphics(screen, startX, startY+i, tview.BoxDrawingsLightTripleDashVertical, style)
+			view.PrintJoinedSemigraphics(screen, startX, startY+i, view.BoxDrawingsLightTripleDashVertical, color)
 		}
 	}
 }

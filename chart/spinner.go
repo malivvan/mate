@@ -2,12 +2,12 @@ package chart
 
 import (
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // Spinner represents a spinner widget.
 type Spinner struct {
-	*tview.Box
+	*view.Box
 
 	counter      int
 	currentStyle SpinnerStyle
@@ -39,7 +39,7 @@ const (
 // NewSpinner returns a new spinner widget.
 func NewSpinner() *Spinner {
 	return &Spinner{
-		Box:          tview.NewBox(),
+		Box:          view.NewBox(),
 		currentStyle: SpinnerDotsCircling,
 		styles: map[SpinnerStyle][]rune{
 			SpinnerDotsCircling:   []rune(`⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`),
@@ -63,9 +63,11 @@ func NewSpinner() *Spinner {
 
 // Draw draws this primitive onto the screen.
 func (s *Spinner) Draw(screen tcell.Screen) {
-	s.Box.DrawForSubclass(screen, s)
+	//s.Box.DrawForSubclass(screen, s)
+
+	s.Box.Draw(screen)
 	x, y, width, _ := s.Box.GetInnerRect()
-	tview.Print(screen, s.getCurrentFrame(), x, y, width, tview.AlignLeft, tcell.ColorDefault)
+	view.Print(screen, []byte(s.getCurrentFrame()), x, y, width, view.AlignLeft, tcell.ColorDefault)
 }
 
 // Pulse updates the spinner to the next frame.

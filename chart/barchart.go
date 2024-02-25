@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 const (
@@ -22,7 +22,7 @@ type BarChartItem struct {
 
 // BarChart represents bar chart primitive.
 type BarChart struct {
-	*tview.Box
+	*view.Box
 	// bar items
 	bars []BarChartItem
 	// maximum value of bars
@@ -40,7 +40,7 @@ type BarChart struct {
 // NewBarChart returns a new bar chart primitive.
 func NewBarChart() *BarChart {
 	chart := &BarChart{
-		Box:            tview.NewBox(),
+		Box:            view.NewBox(),
 		barGap:         barGap,
 		barWidth:       barWidth,
 		axesColor:      tcell.ColorDimGray,
@@ -51,7 +51,7 @@ func NewBarChart() *BarChart {
 }
 
 // Focus is called when this primitive receives focus.
-func (c *BarChart) Focus(delegate func(p tview.Primitive)) {
+func (c *BarChart) Focus(delegate func(p view.Primitive)) {
 	delegate(c.Box)
 }
 
@@ -62,7 +62,8 @@ func (c *BarChart) HasFocus() bool {
 
 // Draw draws this primitive onto the screen.
 func (c *BarChart) Draw(screen tcell.Screen) { //nolint:funlen,cyclop
-	c.Box.DrawForSubclass(screen, c)
+	//c.Box.DrawForSubclass(screen, c)
+	c.Box.Draw(screen)
 
 	x, y, width, height := c.Box.GetInnerRect()
 
@@ -83,33 +84,30 @@ func (c *BarChart) Draw(screen tcell.Screen) { //nolint:funlen,cyclop
 		maxValLenght = barChartYAxisLabelWidth
 	}
 
-	axesStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(c.axesColor)
-	axesLabelStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(c.axesLabelColor)
-
 	// draw Y axis line
 	drawLine(screen,
 		x+maxValLenght,
 		y+borderPadding,
 		height-borderPadding-1,
-		verticalLine, axesStyle)
+		verticalLine, c.axesColor)
 
 	// draw X axis line
 	drawLine(screen,
 		x+maxValLenght+1,
 		xAxisStartY,
 		width-borderPadding-maxValLenght-1,
-		horizontalLine, axesStyle)
+		horizontalLine, c.axesColor)
 
-	tview.PrintJoinedSemigraphics(screen,
+	view.PrintJoinedSemigraphics(screen,
 		x+maxValLenght,
 		xAxisStartY,
-		tview.BoxDrawingsLightUpAndRight, axesStyle)
+		view.BoxDrawingsLightUpAndRight, c.axesColor)
 
-	tview.PrintJoinedSemigraphics(screen, x+maxValLenght-1, xAxisStartY, '0', axesLabelStyle)
+	view.PrintJoinedSemigraphics(screen, x+maxValLenght-1, xAxisStartY, '0', c.axesLabelColor)
 
 	mxValRune := []rune(maxValueSr)
 	for i := 0; i < len(mxValRune); i++ {
-		tview.PrintJoinedSemigraphics(screen, x+borderPadding+i, maxValY, mxValRune[i], axesLabelStyle)
+		view.PrintJoinedSemigraphics(screen, x+borderPadding+i, maxValY, mxValRune[i], c.axesLabelColor)
 	}
 
 	// draw bars
@@ -124,15 +122,15 @@ func (c *BarChart) Draw(screen tcell.Screen) { //nolint:funlen,cyclop
 		// set labels
 		r := []rune(item.label)
 		for j := 0; j < len(r); j++ {
-			tview.PrintJoinedSemigraphics(screen, startX+j, labelY, r[j], axesLabelStyle)
+			view.PrintJoinedSemigraphics(screen, startX+j, labelY, r[j], c.axesLabelColor)
 		}
 		// bar style
-		bStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(item.color)
+		//bStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(item.color)
 		barHeight := c.getHeight(valueMaxHeight, item.value)
 
 		for k := 0; k < barHeight; k++ {
 			for l := 0; l < c.barWidth; l++ {
-				tview.PrintJoinedSemigraphics(screen, startX+l, barStartY-k, fullBlockRune, bStyle)
+				view.PrintJoinedSemigraphics(screen, startX+l, barStartY-k, fullBlockRune, item.color)
 			}
 		}
 		// bar value
@@ -140,7 +138,7 @@ func (c *BarChart) Draw(screen tcell.Screen) { //nolint:funlen,cyclop
 		vRune := []rune(vSt)
 
 		for i := 0; i < len(vRune); i++ {
-			tview.PrintJoinedSemigraphics(screen, startX+i, barStartY-barHeight, vRune[i], bStyle)
+			view.PrintJoinedSemigraphics(screen, startX+i, barStartY-barHeight, vRune[i], item.color)
 		}
 
 		// calculate next startX for next bar

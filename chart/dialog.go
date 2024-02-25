@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // represents dialog type.
@@ -15,13 +15,13 @@ const (
 
 // MessageDialog represents message dialog primitive.
 type MessageDialog struct {
-	*tview.Box
+	*view.Box
 	// layout message dialog layout
-	layout *tview.Flex
+	layout *view.Flex
 	// message view
-	textview *tview.TextView
+	textview *view.TextView
 	// dialog form buttons
-	form *tview.Form
+	form *view.Form
 	// message dialog X
 	x int
 	// message dialog Y
@@ -44,21 +44,22 @@ type MessageDialog struct {
 // NewMessageDialog returns a new message dialog primitive.
 func NewMessageDialog(dtype int) *MessageDialog {
 	dialog := &MessageDialog{
-		Box:         tview.NewBox(),
+		Box:         view.NewBox(),
 		messageType: dtype,
 		bgColor:     tcell.ColorSteelBlue,
 	}
 
-	dialog.textview = tview.NewTextView().
-		SetDynamicColors(true).
-		SetWrap(true).
-		SetTextAlign(tview.AlignLeft)
+	dialog.textview = view.NewTextView()
+	dialog.textview.SetDynamicColors(true)
+	dialog.textview.SetWrap(true)
+	dialog.textview.SetTextAlign(view.AlignLeft)
 
-	dialog.form = tview.NewForm().
-		AddButton("Enter", nil).
-		SetButtonsAlign(tview.AlignRight)
+	dialog.form = view.NewForm()
+	dialog.form.AddButton("Enter", nil)
+	dialog.form.SetButtonsAlign(view.AlignRight)
 
-	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
+	dialog.layout = view.NewFlex()
+	dialog.layout.SetDirection(view.FlexRow)
 	dialog.layout.AddItem(dialog.textview, 0, 0, true)
 	dialog.layout.AddItem(dialog.form, dialogFormHeight, 0, true)
 	dialog.layout.SetBorder(true)
@@ -92,7 +93,7 @@ func (d *MessageDialog) SetMessage(message string) {
 }
 
 // Focus is called when this primitive receives focus.
-func (d *MessageDialog) Focus(delegate func(p tview.Primitive)) {
+func (d *MessageDialog) Focus(delegate func(p view.Primitive)) {
 	delegate(d.form)
 }
 
@@ -117,15 +118,16 @@ func (d *MessageDialog) SetTextColor(color tcell.Color) {
 
 // Draw draws this primitive onto the screen.
 func (d *MessageDialog) Draw(screen tcell.Screen) {
-	d.Box.DrawForSubclass(screen, d)
+	//d.Box.DrawForSubclass(screen, d)
+	d.Box.Draw(screen)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
 // InputHandler returns input handler function for this primitive.
-func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p view.Primitive)) {
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p view.Primitive)) {
 		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp { //nolint:lll
 			if textHandler := d.textview.InputHandler(); textHandler != nil {
 				textHandler(event, setFocus)
@@ -142,11 +144,11 @@ func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (d *MessageDialog) MouseHandler() func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { //nolint:lll
-	return d.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { //nolint:lll,nonamedreturns
+func (d *MessageDialog) MouseHandler() func(action view.MouseAction, event *tcell.EventMouse, setFocus func(p view.Primitive)) (consumed bool, capture view.Primitive) { //nolint:lll
+	return d.WrapMouseHandler(func(action view.MouseAction, event *tcell.EventMouse, setFocus func(p view.Primitive)) (consumed bool, capture view.Primitive) { //nolint:lll,nonamedreturns
 		// Pass mouse events on to the form.
 		consumed, capture = d.form.MouseHandler()(action, event, setFocus)
-		if !consumed && action == tview.MouseLeftClick && d.InRect(event.Position()) {
+		if !consumed && action == view.MouseLeftClick && d.InRect(event.Position()) {
 			setFocus(d)
 			consumed = true
 		}
@@ -216,7 +218,7 @@ func (d *MessageDialog) setRect() {
 		d.x += emptyWidth
 	}
 
-	d.layout.Clear()
+	//d.layout.Clear()
 
 	d.layout.AddItem(d.textview, layoutHeight, 0, true)
 	d.layout.AddItem(d.form, dialogFormHeight, 0, true)

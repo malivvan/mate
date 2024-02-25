@@ -4,13 +4,14 @@ import (
 	"github.com/malivvan/mate/chart"
 	"time"
 
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 func main() {
-	app := tview.NewApplication()
-	grid := tview.NewGrid()
-	grid.SetBorder(true).SetTitle("Spinners")
+	app := view.NewApplication()
+	grid := view.NewGrid()
+	grid.SetBorder(true)
+	grid.SetTitle("Spinners")
 
 	spinners := [][]*chart.Spinner{
 		{
@@ -61,7 +62,9 @@ func main() {
 	}
 	go update()
 
-	if err := app.SetRoot(grid, false).EnableMouse(true).Run(); err != nil {
+	app.SetRoot(grid, false)
+	app.EnableMouse(true)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }

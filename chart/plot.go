@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // Marker represents plot drawing marker (braille or dot).
@@ -40,7 +40,7 @@ type brailleCell struct {
 
 // Plot represents a plot primitive used for different charts.
 type Plot struct {
-	*tview.Box
+	*view.Box
 	data           [][]float64
 	maxVal         float64
 	marker         Marker
@@ -59,7 +59,7 @@ type Plot struct {
 // NewPlot returns a plot widget.
 func NewPlot() *Plot {
 	return &Plot{
-		Box:            tview.NewBox(),
+		Box:            view.NewBox(),
 		marker:         PlotMarkerDot,
 		ptype:          PlotTypeLineChart,
 		dotMarkerRune:  dotRune,
@@ -76,7 +76,8 @@ func NewPlot() *Plot {
 
 // Draw draws this primitive onto the screen.
 func (plot *Plot) Draw(screen tcell.Screen) {
-	plot.Box.DrawForSubclass(screen, plot)
+	//plot.Box.DrawForSubclass(screen, plot)
+	plot.Box.Draw(screen)
 
 	switch plot.marker {
 	case PlotMarkerDot:
@@ -185,26 +186,24 @@ func (plot *Plot) drawAxesToScreen(screen tcell.Screen) {
 	x, y, width, height := plot.Box.GetInnerRect()
 	plotYAxisLabelsWidth := plot.getYAxisLabelsWidth()
 
-	axesStyle := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(plot.axesColor)
-
 	// draw Y axis line
 	drawLine(screen,
 		x+plotYAxisLabelsWidth,
 		y,
 		height-plotXAxisLabelsHeight-1,
-		verticalLine, axesStyle)
+		verticalLine, plot.axesColor)
 
 	// draw X axis line
 	drawLine(screen,
 		x+plotYAxisLabelsWidth+1,
 		y+height-plotXAxisLabelsHeight-1,
 		width-plotYAxisLabelsWidth-1,
-		horizontalLine, axesStyle)
+		horizontalLine, plot.axesColor)
 
-	tview.PrintJoinedSemigraphics(screen,
+	view.PrintJoinedSemigraphics(screen,
 		x+plotYAxisLabelsWidth,
 		y+height-plotXAxisLabelsHeight-1,
-		tview.BoxDrawingsLightUpAndRight, axesStyle)
+		view.BoxDrawingsLightUpAndRight, plot.axesColor)
 
 	if plot.drawXAxisLabel {
 		plot.drawXAxisLabelToScreen(screen, plotYAxisLabelsWidth, x, y, width, height)
@@ -218,11 +217,11 @@ func (plot *Plot) drawAxesToScreen(screen tcell.Screen) {
 func (plot *Plot) drawXAxisLabelToScreen(
 	screen tcell.Screen, plotYAxisLabelsWidth int, x int, y int, width int, height int,
 ) {
-	tview.Print(screen, "0",
+	view.Print(screen, []byte("0"),
 		x+plotYAxisLabelsWidth,
 		y+height-plotXAxisLabelsHeight,
 		1,
-		tview.AlignLeft, plot.axesLabelColor)
+		view.AlignLeft, plot.axesLabelColor)
 
 	for labelX := x + plotYAxisLabelsWidth +
 		(plotXAxisLabelsGap)*plotHorizontalScale + 1; labelX < x+width-1; {
@@ -231,7 +230,7 @@ func (plot *Plot) drawXAxisLabelToScreen(
 			(labelX-(x+plotYAxisLabelsWidth)-1)/(plotHorizontalScale)+1,
 		)
 
-		tview.Print(screen, label, labelX, y+height-plotXAxisLabelsHeight, width, tview.AlignLeft, plot.axesLabelColor)
+		view.Print(screen, []byte(label), labelX, y+height-plotXAxisLabelsHeight, width, view.AlignLeft, plot.axesLabelColor)
 
 		labelX += (len(label) + plotXAxisLabelsGap) * plotHorizontalScale
 	}
@@ -242,12 +241,12 @@ func (plot *Plot) drawYAxisLabelToScreen(screen tcell.Screen, plotYAxisLabelsWid
 
 	for i := 0; i*(plotYAxisLabelsGap+1) < height-1; i++ {
 		label := fmt.Sprintf("%.2f", float64(i)*verticalScale*(plotYAxisLabelsGap+1))
-		tview.Print(screen,
-			label,
+		view.Print(screen,
+			[]byte(label),
 			x,
 			y+height-(i*(plotYAxisLabelsGap+1))-2, //nolint:gomnd
 			plotYAxisLabelsWidth,
-			tview.AlignLeft, plot.axesLabelColor)
+			view.AlignLeft, plot.axesLabelColor)
 	}
 }
 
@@ -259,27 +258,23 @@ func (plot *Plot) drawDotMarkerToScreen(screen tcell.Screen) {
 	switch plot.ptype {
 	case PlotTypeLineChart:
 		for i, line := range chartData {
-			style := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(plot.lineColors[i])
-
 			for j := 0; j < len(line) && j*plotHorizontalScale < width; j++ {
 				val := line[j]
 				lheight := int((val / plot.maxVal) * float64(height-1))
 
 				if (x+(j*plotHorizontalScale) < x+width) && (y+height-1-lheight < y+height) {
-					tview.PrintJoinedSemigraphics(screen, x+(j*plotHorizontalScale), y+height-1-lheight, plot.dotMarkerRune, style)
+					view.PrintJoinedSemigraphics(screen, x+(j*plotHorizontalScale), y+height-1-lheight, plot.dotMarkerRune, plot.lineColors[i])
 				}
 			}
 		}
 
 	case PlotTypeScatter:
 		for i, line := range chartData {
-			style := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(plot.lineColors[i])
-
 			for j, val := range line {
 				lheight := int((val / plot.maxVal) * float64(height-1))
 
 				if (x+(j*plotHorizontalScale) < x+width) && (y+height-1-lheight < y+height) {
-					tview.PrintJoinedSemigraphics(screen, x+(j*plotHorizontalScale), y+height-1-lheight, plot.dotMarkerRune, style)
+					view.PrintJoinedSemigraphics(screen, x+(j*plotHorizontalScale), y+height-1-lheight, plot.dotMarkerRune, plot.lineColors[i])
 				}
 			}
 		}
@@ -293,9 +288,8 @@ func (plot *Plot) drawBrailleMarkerToScreen(screen tcell.Screen) {
 
 	// print to screen
 	for point, cell := range plot.getBrailleCells() {
-		style := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(cell.color)
 		if point.X < x+width && point.Y < y+height {
-			tview.PrintJoinedSemigraphics(screen, point.X, point.Y, cell.cRune, style)
+			view.PrintJoinedSemigraphics(screen, point.X, point.Y, cell.cRune, cell.color)
 		}
 	}
 }

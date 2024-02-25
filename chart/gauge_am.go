@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // ActivityModeGauge represents activity mode gauge permitive.
 type ActivityModeGauge struct {
-	*tview.Box
+	*view.Box
 	// counter value
 	counter int
 
@@ -20,7 +20,7 @@ type ActivityModeGauge struct {
 // NewActivityModeGauge returns new activity mode gauge permitive.
 func NewActivityModeGauge() *ActivityModeGauge {
 	gauge := &ActivityModeGauge{
-		Box:       tview.NewBox(),
+		Box:       view.NewBox(),
 		counter:   0,
 		pgBgColor: tcell.ColorBlue,
 	}
@@ -30,17 +30,19 @@ func NewActivityModeGauge() *ActivityModeGauge {
 
 // Draw draws this primitive onto the screen.
 func (g *ActivityModeGauge) Draw(screen tcell.Screen) {
-	g.Box.DrawForSubclass(screen, g)
+	//	g.Box.DrawForSubclass(screen, g)
+	g.Box.Draw(screen)
+
 	x, y, width, height := g.Box.GetInnerRect()
 	tickStr := g.tickStr(width)
 
 	for i := 0; i < height; i++ {
-		tview.Print(screen, tickStr, x, y+i, width, tview.AlignLeft, g.pgBgColor)
+		view.Print(screen, []byte(tickStr), x, y+i, width, view.AlignLeft, g.pgBgColor)
 	}
 }
 
 // Focus is called when this primitive receives focus.
-func (g *ActivityModeGauge) Focus(delegate func(p tview.Primitive)) {
+func (g *ActivityModeGauge) Focus(delegate func(p view.Primitive)) {
 }
 
 // HasFocus returns whether or not this primitive has focus.
@@ -87,14 +89,14 @@ func (g *ActivityModeGauge) tickStr(max int) string {
 	hWidth := 0
 
 	for i := 0; i < g.counter; i++ {
-		prgHeadStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
+		prgHeadStr += fmt.Sprintf("[%s::]%s", getColorName(view.Styles.PrimitiveBackgroundColor), prgCell)
 		hWidth++
 	}
 
 	prgStr = prgCell + prgCell + prgCell + prgCell
 
 	for i := 0; i < max+hWidth+4; i++ {
-		prgEndStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
+		prgEndStr += fmt.Sprintf("[%s::]%s", getColorName(view.Styles.PrimitiveBackgroundColor), prgCell)
 	}
 
 	return fmt.Sprintf("%s[%s::]%s%s", prgHeadStr, getColorName(g.pgBgColor), prgStr, prgEndStr)

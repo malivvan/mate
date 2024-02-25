@@ -2,11 +2,11 @@ package menu
 
 import (
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 type MenuItem struct {
-	*tview.Box
+	*view.Box
 	Title    string
 	SubItems []*MenuItem
 	onClick  func(*MenuItem)
@@ -14,7 +14,7 @@ type MenuItem struct {
 
 func NewMenuItem(title string) *MenuItem {
 	return &MenuItem{
-		Box:      tview.NewBox(),
+		Box:      view.NewBox(),
 		Title:    title,
 		SubItems: make([]*MenuItem, 0),
 	}
@@ -31,13 +31,14 @@ func (menuItem *MenuItem) SetOnClick(fn func(*MenuItem)) *MenuItem {
 }
 
 func (menuItem *MenuItem) Draw(screen tcell.Screen) {
-	menuItem.Box.DrawForSubclass(screen, menuItem)
+	//menuItem.Box.DrawForSubclass(screen, menuItem)
+	menuItem.Box.Draw(screen)
 	x, y, _, _ := menuItem.GetInnerRect()
-	tview.PrintSimple(screen, menuItem.Title, x, y)
+	view.PrintSimple(screen, []byte(menuItem.Title), x, y)
 }
 
 type SubMenu struct {
-	*tview.Box
+	*view.Box
 	Items         []*MenuItem
 	parent        *MenuBar
 	childMenu     *SubMenu
@@ -46,7 +47,7 @@ type SubMenu struct {
 
 func NewSubMenu(parent *MenuBar, items []*MenuItem) *SubMenu {
 	subMenu := &SubMenu{
-		Box:           tview.NewBox(),
+		Box:           view.NewBox(),
 		Items:         items,
 		parent:        parent,
 		currentSelect: -1,
@@ -75,20 +76,21 @@ func (subMenu *SubMenu) Draw(screen tcell.Screen) {
 	rectHig := len(subMenu.Items)
 	// +2 - add space one space for each side of rect - to fit text inside
 	subMenu.SetRect(rectX, rectY, rectWid+2, rectHig+2)
-	subMenu.Box.DrawForSubclass(screen, subMenu)
+	//subMenu.Box.DrawForSubclass(screen, subMenu)
+	subMenu.Box.Draw(screen)
 
 	x, y, _, _ := subMenu.GetInnerRect()
 	for i, item := range subMenu.Items {
 		if i == subMenu.currentSelect {
-			tview.Print(screen, item.Title, x, y+i, 20, 0, tcell.ColorBlue)
+			view.Print(screen, []byte(item.Title), x, y+i, 20, 0, tcell.ColorBlue)
 			if len(item.SubItems) > 0 {
-				tview.Print(screen, ">", x+maxWidth, y+i, 20, 0, tcell.ColorBlue)
+				view.Print(screen, []byte(">"), x+maxWidth, y+i, 20, 0, tcell.ColorBlue)
 			}
 			continue
 		}
-		tview.PrintSimple(screen, item.Title, x, y+i)
+		view.PrintSimple(screen, []byte(item.Title), x, y+i)
 		if len(item.SubItems) > 0 {
-			tview.PrintSimple(screen, ">", x+maxWidth, y+i)
+			view.PrintSimple(screen, []byte(">"), x+maxWidth, y+i)
 		}
 	}
 	if subMenu.childMenu != nil {
@@ -96,8 +98,8 @@ func (subMenu *SubMenu) Draw(screen tcell.Screen) {
 	}
 }
 
-func (subMenu *SubMenu) MouseHandler() func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
-	return subMenu.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+func (subMenu *SubMenu) MouseHandler() func(action view.MouseAction, event *tcell.EventMouse, setFocus func(p view.Primitive)) (consumed bool, capture view.Primitive) {
+	return subMenu.WrapMouseHandler(func(action view.MouseAction, event *tcell.EventMouse, setFocus func(p view.Primitive)) (consumed bool, capture view.Primitive) {
 		if subMenu.childMenu != nil {
 			consumed, capture = subMenu.childMenu.MouseHandler()(action, event, setFocus)
 
@@ -108,7 +110,7 @@ func (subMenu *SubMenu) MouseHandler() func(action tview.MouseAction, event *tce
 		rectX, rectY, rectW, _ := subMenu.Box.GetInnerRect()
 		if !subMenu.Box.InRect(event.Position()) {
 			// Close the menu if the user clicks outside the menu box
-			if action == tview.MouseLeftClick {
+			if action == view.MouseLeftClick {
 				subMenu.parent.subMenu = nil
 			}
 			return false, nil
@@ -119,7 +121,7 @@ func (subMenu *SubMenu) MouseHandler() func(action tview.MouseAction, event *tce
 		subMenu.currentSelect = index
 		consumed = true
 
-		if action == tview.MouseLeftClick {
+		if action == view.MouseLeftClick {
 			setFocus(subMenu)
 			if index >= 0 && index < len(subMenu.Items) {
 				handler := subMenu.Items[index].onClick
@@ -139,7 +141,7 @@ func (subMenu *SubMenu) MouseHandler() func(action tview.MouseAction, event *tce
 }
 
 type MenuBar struct {
-	*tview.Box
+	*view.Box
 	MenuItems     []*MenuItem
 	subMenu       *SubMenu // sub menu if not nil will be drawn
 	currentOption int
@@ -147,7 +149,7 @@ type MenuBar struct {
 
 func NewMenuBar() *MenuBar {
 	return &MenuBar{
-		Box:       tview.NewBox(),
+		Box:       view.NewBox(),
 		MenuItems: make([]*MenuItem, 0),
 	}
 }
@@ -166,7 +168,8 @@ func (menuBar *MenuBar) AddItem(item *MenuItem) *MenuBar {
 }
 
 func (menuBar *MenuBar) Draw(screen tcell.Screen) {
-	menuBar.Box.DrawForSubclass(screen, menuBar)
+	//menuBar.Box.DrawForSubclass(screen, menuBar)
+	menuBar.Box.Draw(screen)
 
 	x, y, width, _ := menuBar.GetInnerRect()
 
@@ -174,7 +177,7 @@ func (menuBar *MenuBar) Draw(screen tcell.Screen) {
 		screen.SetContent(x+i, y, tcell.RuneBlock, nil, tcell.StyleDefault.Background(menuBar.GetBackgroundColor()).Foreground(menuBar.GetBackgroundColor()))
 	}
 
-	menuItemOffset := 1
+	menuItemOffset := x
 	for _, mi := range menuBar.MenuItems {
 		itemLen := len([]rune(mi.Title))
 		mi.SetRect(menuItemOffset, y, itemLen, 1)
@@ -183,8 +186,8 @@ func (menuBar *MenuBar) Draw(screen tcell.Screen) {
 	}
 }
 
-func (menuBar *MenuBar) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-	return menuBar.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (menuBar *MenuBar) InputHandler() func(event *tcell.EventKey, setFocus func(p view.Primitive)) {
+	return menuBar.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p view.Primitive)) {
 		switch event.Key() {
 		case tcell.KeyLeft:
 			menuBar.currentOption--
@@ -200,8 +203,8 @@ func (menuBar *MenuBar) InputHandler() func(event *tcell.EventKey, setFocus func
 	})
 }
 
-func (p *MenuBar) MouseHandler() func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
-	return p.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+func (p *MenuBar) MouseHandler() func(action view.MouseAction, event *tcell.EventMouse, setFocus func(p view.Primitive)) (consumed bool, capture view.Primitive) {
+	return p.WrapMouseHandler(func(action view.MouseAction, event *tcell.EventMouse, setFocus func(p view.Primitive)) (consumed bool, capture view.Primitive) {
 		if p.subMenu != nil {
 			consumed, capture = p.subMenu.MouseHandler()(action, event, setFocus)
 			if consumed {
@@ -228,7 +231,7 @@ func (p *MenuBar) MouseHandler() func(action tview.MouseAction, event *tcell.Eve
 	})
 }
 
-func (menuBar *MenuBar) Focus(delegate func(p tview.Primitive)) {
+func (menuBar *MenuBar) Focus(delegate func(p view.Primitive)) {
 	//if menuBar.subMenu != nil {
 	//	delegate(menuBar.subMenu)
 	//} else {

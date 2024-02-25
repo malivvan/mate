@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 // PercentageModeGauge represents percentage mode gauge permitive.
 type PercentageModeGauge struct {
-	*tview.Box
+	*view.Box
 	// maxValue value
 	maxValue int
 	// value is current value
@@ -21,7 +21,7 @@ type PercentageModeGauge struct {
 // NewPercentageModeGauge returns new percentage mode gauge permitive.
 func NewPercentageModeGauge() *PercentageModeGauge {
 	gauge := &PercentageModeGauge{
-		Box:       tview.NewBox(),
+		Box:       view.NewBox(),
 		value:     0,
 		pgBgColor: tcell.ColorBlue,
 	}
@@ -31,7 +31,8 @@ func NewPercentageModeGauge() *PercentageModeGauge {
 
 // Draw draws this primitive onto the screen.
 func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
-	g.Box.DrawForSubclass(screen, g)
+	//g.Box.DrawForSubclass(screen, g)
+	g.Box.Draw(screen)
 
 	if g.maxValue == 0 {
 		return
@@ -45,7 +46,7 @@ func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
 	tX := x + (tW / emptySpaceParts)
 	tY := y + height/emptySpaceParts
 	prgBlock := g.progressBlock(width)
-	style := tcell.StyleDefault.Background(g.pgBgColor).Foreground(tview.Styles.PrimaryTextColor)
+	style := tcell.StyleDefault.Background(g.pgBgColor).Foreground(view.Styles.PrimaryTextColor)
 
 	for i := 0; i < height; i++ {
 		for j := 0; j < prgBlock; j++ {
@@ -57,9 +58,9 @@ func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
 
 	pcRune := []rune(pcString)
 	for j := 0; j < len(pcRune); j++ {
-		style = tcell.StyleDefault.Background(tview.Styles.PrimitiveBackgroundColor).Foreground(tview.Styles.PrimaryTextColor)
+		style = tcell.StyleDefault.Background(view.Styles.PrimitiveBackgroundColor).Foreground(view.Styles.PrimaryTextColor)
 		if x+prgBlock >= tX+j {
-			style = tcell.StyleDefault.Background(g.pgBgColor).Foreground(tview.Styles.PrimaryTextColor)
+			style = tcell.StyleDefault.Background(g.pgBgColor).Foreground(view.Styles.PrimaryTextColor)
 		}
 
 		for i := 0; i < height; i++ {
@@ -70,7 +71,7 @@ func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
 }
 
 // Focus is called when this primitive receives focus.
-func (g *PercentageModeGauge) Focus(delegate func(p tview.Primitive)) {
+func (g *PercentageModeGauge) Focus(delegate func(p view.Primitive)) {
 }
 
 // HasFocus returns whether or not this primitive has focus.

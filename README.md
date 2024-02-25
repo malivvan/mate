@@ -8,13 +8,13 @@ go get github.com/malivvan/mate@latest
 ```
 
 ## Third-party Licenses
-- [github.com/epiclabs-io/winman](https://github.com/epiclabs-io/winman) [↗](_licenses/github.com_epiclabs-io_winman.txt)
+- [code.rocket9labs.com/tslocum/cview](https://code.rocket9labs.com/tslocum/cview) [↗](_licenses/rocket9labs.com_tslocum_cview.txt)
 - [github.com/navidys/tvxwidgets](https://github.com/navidys/tvxwidgets) [↗](_licenses/github.com_navidys_tvxwidgets.txt)
 - [github.com/Omnikron13/pixelview](https://github.com/Omnikron13/pixelview) [↗](_licenses/github.com_Omnikron13_pixelview.txt)
 - [github.com/pgavlin/femto](https://github.com/pgavlin/femto) [↗](_licenses/github.com_pgavlin_femto.txt)
 - [github.com/Racinettee/tmenu](https://github.com/Racinettee/tmenu) [↗](_licenses/github.com_Racinettee_tmenu.txt)
 - [github.com/stjohnjohnson/gifview](https://github.com/stjohnjohnson/gifview) [↗](_licenses/github.com_stjohnjohnson_gifview.txt)
-- [rocket9labs.com/tslocum/cbind](https://rocket9labs.com/tslocum/cbind) [↗](_licenses/rocket9labs.com_tslocum_cbind.txt)
+- [code.rocket9labs.com/tslocum/cbind](https://code.rocket9labs.com/tslocum/cbind) [↗](_licenses/rocket9labs.com_tslocum_cbind.txt)
 
 ## License
 This project is licensed under the [MIT License](LICENSE).

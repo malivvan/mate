@@ -3,7 +3,7 @@ package chart_test
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/malivvan/mate/chart"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 	"testing"
 )
 
@@ -110,21 +110,21 @@ func TestDrawLine(t *testing.T) {
 	screen.Clear()
 
 	// draw and test horizontal line
-	chart.DrawLine(screen, lineStartX, lineStartY, lineLength, 0, tcell.StyleDefault)
+	chart.DrawLine(screen, lineStartX, lineStartY, lineLength, 0, tcell.ColorDefault)
 	screen.Show()
 
 	cellRune, _, _, _ := screen.GetContent(lineStartX, lineStartY)
-	if cellRune != tview.BoxDrawingsLightTripleDashHorizontal {
-		t.Errorf("Expected rune to be %v, but got %v", tview.BoxDrawingsLightTripleDashHorizontal, cellRune)
+	if cellRune != view.BoxDrawingsLightTripleDashHorizontal {
+		t.Errorf("Expected rune to be %v, but got %v", view.BoxDrawingsLightTripleDashHorizontal, cellRune)
 	}
 
 	// draw and test vertical line
 	screen.Clear()
-	chart.DrawLine(screen, lineStartX, lineStartY, lineLength, 1, tcell.StyleDefault)
+	chart.DrawLine(screen, lineStartX, lineStartY, lineLength, 1, tcell.ColorDefault)
 	screen.Show()
 
 	cellRune, _, _, _ = screen.GetContent(lineStartX, lineStartY)
-	if cellRune != tview.BoxDrawingsLightTripleDashVertical {
-		t.Errorf("Expected rune to be %v, but got %v", tview.BoxDrawingsLightTripleDashVertical, cellRune)
+	if cellRune != view.BoxDrawingsLightTripleDashVertical {
+		t.Errorf("Expected rune to be %v, but got %v", view.BoxDrawingsLightTripleDashVertical, cellRune)
 	}
 }

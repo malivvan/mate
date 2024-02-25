@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 func main() {
-	app := tview.NewApplication()
+	app := view.NewApplication()
 	iowaitSparkline := chart.NewSparkline()
 	iowaitSparkline.SetBorder(false)
 	iowaitSparkline.SetDataTitle("Disk I/O (iowait)")
@@ -48,13 +48,14 @@ func main() {
 	iowaitSparkline.SetData(ioSparkLineData)
 	systemSparkline.SetData(systemSparklineData)
 
-	sparklineGroupLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+	sparklineGroupLayout := view.NewFlex()
+	sparklineGroupLayout.SetDirection(view.FlexRow)
 	sparklineGroupLayout.SetBorder(true)
 	sparklineGroupLayout.SetBorderColor(tcell.ColorDimGray)
 	sparklineGroupLayout.SetTitle("DISK IO")
 	sparklineGroupLayout.SetTitleColor(tcell.ColorDarkOrange)
 	sparklineGroupLayout.AddItem(iowaitSparkline, 0, 1, false)
-	sparklineGroupLayout.AddItem(tview.NewBox(), 1, 0, false)
+	sparklineGroupLayout.AddItem(view.NewBox(), 1, 0, false)
 	sparklineGroupLayout.AddItem(systemSparkline, 0, 1, false)
 
 	moveData := func() ([]float64, []float64) {
@@ -87,7 +88,9 @@ func main() {
 
 	go update()
 
-	if err := app.SetRoot(sparklineGroupLayout, true).EnableMouse(true).Run(); err != nil {
+	app.SetRoot(sparklineGroupLayout, true)
+	app.EnableMouse(true)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }

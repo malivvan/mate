@@ -31,7 +31,7 @@ func FromReader(reader io.Reader) (encoded string, err error) {
 }
 
 // FromImage is the primary function of this package,
-// It takes an image.Image and converts it to a string formatted for tview.
+// It takes an image.Image and converts it to a string formatted for view.
 // The unicode half-block character (▀) with a fg & bg colour set will represent
 // pixels in the returned string.
 // Because each character represents two pixels, it is not possible to convert an

@@ -1,14 +1,14 @@
-// Demo code for the bar chart primitive.
 package main
 
 import (
+	"github.com/malivvan/mate/chart"
 	"time"
 
-	"github.com/rivo/tview"
+	"github.com/malivvan/mate/view"
 )
 
 func main() {
-	app := tview.NewApplication()
+	app := view.NewApplication()
 	gauge := chart.NewPercentageModeGauge()
 	gauge.SetTitle("percentage mode gauge")
 	gauge.SetRect(10, 4, 50, 3)
@@ -34,7 +34,9 @@ func main() {
 	}
 	go update()
 
-	if err := app.SetRoot(gauge, false).EnableMouse(true).Run(); err != nil {
+	app.SetRoot(gauge, true)
+	app.EnableMouse(true)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }
